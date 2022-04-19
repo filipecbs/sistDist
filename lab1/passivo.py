@@ -23,7 +23,7 @@ while True:
 	msg = novoSock.recv(1024) # argumento indica a qtde maxima de dados
 
 	# mensagem de encerramento da conexão
-	if str(msg, 'utf-8').lower() == 'encerrar':
+	if not msg:
 		print('Encerrando conexao com: ', endereco)
 		break
 	else:

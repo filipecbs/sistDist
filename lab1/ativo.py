@@ -17,7 +17,6 @@ while True:
 
 	# mensagem que encerra a conexão
 	if msg.lower() == 'encerrar':
-		sock.send(b'encerrar')
 		print('Encerrando conexao...')
 		break
 
