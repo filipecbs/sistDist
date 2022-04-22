@@ -27,14 +27,15 @@ def process(filename):
 		for word in words:
 			word_count[word] = word_count.get(word, 0) + 1 # salva a frequência da palavra em sua respectiva chave
 
-		sorted(word_count.items(), key=lambda item: item[1], reverse=True) # ordena o dicionário por frequência
-		most_frequent = ''
+		sorted_words = sorted(word_count.items(), key=lambda item: item[1], reverse=True) # ordena o dicionário por frequência
+		most_frequent = '\nPalavras mais frequentes:\n\n'
 		i = 0
 
 		# cria uma lista com as 5 palavras mais frequentes
-		for key, value in word_count.items():
+		for word in sorted_words:
 			if i == 5: break
-			most_frequent += key + ': ' + str(value) + '\n'
+			if word[0] == '': continue
+			most_frequent += word[0] + ': ' + str(word[1]) + '\n'
 			i += 1
 
 		return True, most_frequent
@@ -43,7 +44,7 @@ def process(filename):
 	else:
 		return False, text
 
-HOST = ''    # '' possibilita acessar qualquer addr alcancavel da maquina local
+HOST = ''    # '' possibilita acessar qualquer endereço alcancavel da maquina local
 PORT = 5000  # porta onde chegarao as mensagens para essa aplicacao
 
 # cria um socket para comunicação
@@ -60,13 +61,13 @@ with socket.socket() as s: # default: socket.AF_INET, socket.SOCK_STREAM
 			with ns:
 				print('Conectado com', addr)
 
-				msg = ns.recv(1024) # argumento indica a qtde maxima de dados
+				msg = ns.recv(1024) # argumento indica a quantidade máxima de dados
 
 				# ativa a camada de processamento
 				file_exists, text = process(msg.decode())
 				ns.sendall(text.encode())
 				# mensagem de encerramento da conexão
-				print('Encerrando conexao com: ', addr)
+				print('Encerrando conexão com: ', addr)
 
 		# reconhece ctrl + c para encerrar o servidor
 		except KeyboardInterrupt:

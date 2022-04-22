@@ -23,4 +23,4 @@ with socket.socket() as s: # default: socket.AF_INET, socket.SOCK_STREAM
 	print(rcv.decode())
 
 	# mensagem que encerra a conexão
-	print('Encerrando conexao...')
+	print('Encerrando conexão...')
