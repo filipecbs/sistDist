@@ -1,6 +1,47 @@
-# Exemplo basico socket (lado passivo)
+# Servidor
 
-import socket, sys
+import socket, string, sys
+from os.path import exists
+
+def access(filename):
+	# confere se o arquivo existe
+	if exists(filename + '.txt'):
+		f = open(filename + '.txt', 'r')
+		text = f.read().rstrip()
+
+		return True, text
+	else:
+		return False, "Esse arquivo não existe!"
+
+def process(filename):
+	# ativa a camada de acesso para pegar o arquivo
+	file_exists, text = access(filename)
+
+	# se o arquivo existe, realiza o processamento dos dados
+	if file_exists:
+		processed_text = text.translate(str.maketrans('', '', string.punctuation)) # retira pontuação do texto
+		processed_text = processed_text.lower().replace('\n', ' ') # troca quebra de linha por espaço
+		words = processed_text.split(' ') # cria um array com as palavras do texto
+		word_count = {} # dicionário para contar a frequência das palavras
+
+		for word in words:
+			word_count[word] = word_count.get(word, 0) + 1 # salva a frequência da palavra em sua respectiva chave
+
+		sorted(word_count.items(), key=lambda item: item[1], reverse=True) # ordena o dicionário por frequência
+		most_frequent = ''
+		i = 0
+
+		# cria uma lista com as 5 palavras mais frequentes
+		for key, value in word_count.items():
+			if i == 5: break
+			most_frequent += key + ': ' + str(value) + '\n'
+			i += 1
+
+		return True, most_frequent
+
+	# se o arquivo não existe, retorna a mensagem de erro
+	else:
+		return False, text
 
 HOST = ''    # '' possibilita acessar qualquer addr alcancavel da maquina local
 PORT = 5000  # porta onde chegarao as mensagens para essa aplicacao
@@ -19,18 +60,13 @@ with socket.socket() as s: # default: socket.AF_INET, socket.SOCK_STREAM
 			with ns:
 				print('Conectado com', addr)
 
-				while True:
-					# depois de conectar-se, espera uma mensagem
-					msg = ns.recv(1024) # argumento indica a qtde maxima de dados
+				msg = ns.recv(1024) # argumento indica a qtde maxima de dados
 
-					# mensagem de encerramento da conexão
-					if not msg:
-						print('Encerrando conexao com: ', addr)
-						break
-
-					else:
-						# envia mensagem de resposta
-						ns.send(msg)
+				# ativa a camada de processamento
+				file_exists, text = process(msg.decode())
+				ns.sendall(text.encode())
+				# mensagem de encerramento da conexão
+				print('Encerrando conexao com: ', addr)
 
 		# reconhece ctrl + c para encerrar o servidor
 		except KeyboardInterrupt:

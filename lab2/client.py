@@ -1,29 +1,26 @@
-# Exemplo basico socket (lado ativo)
+# Cliente
 
 import socket
 
-HOST = 'localhost' # maquina onde esta o par passivo
-PORT = 5000       # porta que o par passivo esta escutando
+HOST = 'localhost' # máquina onde esta o servidor
+PORT = 5000       # porta que o servidor está escutando
 
 # cria socket
 with socket.socket() as s: # default: socket.AF_INET, socket.SOCK_STREAM
-	s.connect((HOST, PORT)) # conecta-se com o par passivo
-	print('Conectado!')
+	s.connect((HOST, PORT)) # conecta-se com o servidor
+	print('Conectado! Digite o nome do arquivo: ')
 
-	while True:
-		#mensagem escrita pelo lado ativo
-		msg = input()
+	# nome do arquivo que o cliente deseja acessar
+	filename = input()
 
-		# mensagem que encerra a conexão
-		if msg.lower() == 'encerrar':
-			print('Encerrando conexao...')
-			break
+	# envia o nome do arquivo para o servidor
+	s.sendall(filename.encode())
 
-		# envia uma mensagem para o par conectado
-		s.sendall(msg.encode())
+	# espera a resposta do servidor
+	rcv = s.recv(1024)
 
-		#espera a resposta do par conectado
-		rcv = s.recv(1024)
+	# imprime a mensagem recebida
+	print(rcv.decode())
 
-		# imprime a mensagem recebida
-		print(rcv.decode())
+	# mensagem que encerra a conexão
+	print('Encerrando conexao...')
