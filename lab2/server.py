@@ -55,6 +55,7 @@ with socket.socket() as s: # default: socket.AF_INET, socket.SOCK_STREAM
 
 	while True:
 		try:
+			print("\nAguardando cliente...")
 			# aceita uma conexão dentro do loop para que o servidor continue ligado no socket s
 			ns, addr = s.accept()  # retorna um novo socket e o endereço do par conectado
 
@@ -65,9 +66,10 @@ with socket.socket() as s: # default: socket.AF_INET, socket.SOCK_STREAM
 
 				# ativa a camada de processamento
 				file_exists, text = process(msg.decode())
+				# envia a lista de palavras mais frequentes ou uma mensagem de erro
 				ns.sendall(text.encode())
 				# mensagem de encerramento da conexão
-				print('Encerrando conexão com: ', addr)
+				print('Encerrando conexão com', addr)
 
 		# reconhece ctrl + c para encerrar o servidor
 		except KeyboardInterrupt:
