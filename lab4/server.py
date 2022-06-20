@@ -4,6 +4,7 @@ from node import initialize
 HOST = 'localhost'
 PORT = 5000
 
+# cria o grafo inicial com nós aleatórios
 def create_nodes():
 	tids = random.sample(range(1, 1000), 10)
 	nodes = []
@@ -34,20 +35,25 @@ def main():
 		nodes = create_nodes()
 		processes = []
 
+		# cria os processos de cada nó
 		for i in range(len(nodes)):
 			processes.append(multiprocessing.Process(target=initialize, args=nodes[i]))
 			processes[i].start()
 
+		# imprime resposta
 		def print_response(response):
 			print(f"O líder é o nó {response}")
 
+		# escolhe um nó aleatório para ser o inicial
 		node = nodes[random.randint(0, len(nodes)-1)]
 		conn = rpyc.connect(HOST, node[1])
 		conn.root.probe_echo(print_response)
 
+		# espera os processos terminarem
 		for i in range(len(nodes)):
 			processes[i].join()
 
+	# espera o ctrl+c para finalizar os processos e encerrar o servidor
 	except KeyboardInterrupt:
 		for i in range(len(nodes)):
 			processes[i].terminate()
